@@ -22,7 +22,7 @@ begin
   store_reg : process (clk) is
   begin
 
-    if (clk'event and clk = '1') then
+    if (clk = '1') then
       if (enable_ir = '1') then
         output <= input;
       end if;

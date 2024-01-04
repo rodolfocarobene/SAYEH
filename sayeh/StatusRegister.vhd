@@ -14,6 +14,12 @@ entity statusregister is
     -- enable loading (from ALU)
     srload : in    std_logic;
 
+    -- set ad reset flags
+    cset   : in    std_logic;
+    creset : in    std_logic;
+    zset   : in    std_logic;
+    zreset : in    std_logic;
+
     -- output flags
     cout : out   std_logic;
     zout : out   std_logic
