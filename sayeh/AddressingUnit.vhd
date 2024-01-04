@@ -5,7 +5,7 @@
 library ieee;
   use ieee.std_logic_1164.all;
 
-entity adressingunit is
+entity addressingunit is
   port (
     clk : in    std_logic;
 
@@ -26,9 +26,9 @@ entity adressingunit is
     -- sole output of the AddressLogic
     address : out   std_logic_vector(15 downto 0)
   );
-end entity adressingunit;
+end entity addressingunit;
 
-architecture adressuni of adressingunit is
+architecture addressuni of addressingunit is
 
   -- Internal address, output of the PC
   signal pcout : std_logic_vector(15 downto 0);
@@ -85,5 +85,5 @@ begin
 
   address <= temp;
 
-end architecture adressuni;
+end architecture addressuni;
 
