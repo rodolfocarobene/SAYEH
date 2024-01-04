@@ -6,7 +6,7 @@
 library ieee;
   use ieee.std_logic_1164.all;
 
-entity controler is
+entity controller is
   port (
     clk : in    std_logic;
 
@@ -20,6 +20,7 @@ entity controler is
     -- Memory output
     memdataready : in    std_logic;
 
+    shadow_en              : in    std_logic;
     -- control inputs of the datapath
     shadow                 : out   std_logic;
     ir_on_hopndbus         : out   std_logic;
@@ -60,9 +61,9 @@ entity controler is
     rfl_write              : out   std_logic;
     rfh_write              : out   std_logic
   );
-end entity controler;
+end entity controller;
 
-architecture rtl of controler is
+architecture rtl of controller is
 
   type state is (
     halt,
@@ -77,7 +78,6 @@ architecture rtl of controler is
   );
 
   signal current_state, next_state : state;
-  signal shadowen                  : BOOLEAN;
 
   signal check_next : std_logic;
 
@@ -102,7 +102,6 @@ begin
     check_next <= '1'; -- deafult to check if shadow inst is present
 
     -- outp<="00";
-    shadowen               <= false;
     shadow                 <= '0';
     enablepc               <= '0';
     pcplus1                <= '0';
@@ -445,7 +444,7 @@ begin
         --     and irout(15 downto 12) != "0101" -- verify
         --   ) then
         if (check_next == '1') then
-          if (shadowen = true) then
+          if (shadowen == '1') then
             next_state <= exec2;
           else
             pcplus1 <= '1';
@@ -466,7 +465,7 @@ begin
           rfl_write <= '1';
           rfh_write <= '1';
 
-          if (shadowen = true) then
+          if (shadowen == '1') then
             next_state <= exec2;
           else
             pcplus1    <= '1';
