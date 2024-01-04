@@ -77,7 +77,7 @@ architecture rtl of controler is
   );
 
   signal current_state, next_state : state;
-  signal shadowen                  : BOOLEAN := false;
+  signal shadowen                  : BOOLEAN;
 
   signal check_next : std_logic;
 
@@ -465,9 +465,278 @@ begin
           end if;
         end if;
 
-      when execute_second =>
+      when exec2 =>
 
-      when execute_second_exra =>
+        case(irout(7 downto 4)) is
+
+          -- register is XXXX-XX-XX
+          when("0000") =>
+
+            case(irout(3 downto 0)) is
+
+              when ("0000") =>
+
+              -- 0000-00-00 no operation
+              when ("0001") =>
+
+                -- 0000-00-01 halt
+                next_state <= halt;
+
+              when ("0010") =>
+
+                -- 0000-00-10 set zero flag
+                zset <= '1';
+
+              when ("0011") =>
+
+                -- 0000-00-11 clr zero flag
+                zreset <= '1';
+
+              when ("0100") =>
+
+                -- 0000-01-00 set carry flag
+                cset <= '1';
+
+              when ("0101") =>
+
+                -- 0000-01-01 clr carry flag
+                creset <= '1';
+
+              when ("0110") =>
+
+                -- 0000-01-10 clr window pointer
+                wpreset <= '1';
+
+              when ("0111") =>
+
+                -- 0000-01-11 jump addressed
+                pcplusi <= '1';
+
+              when ("1000") =>
+
+                -- 0000-10-00 branch if zero
+                if (zflag <= '1') then
+                  pcplusi <= '1';
+                end if;
+
+              when ("1001") =>
+
+                -- 0000-10-00 branch if carry
+                if (cflag <= '1') then
+                  pcplusi <= '1';
+                end if;
+
+              when ("1010") =>
+
+                -- 0000-10-10 add win pointer
+                wpadd <= '1';
+
+              when OTHERS =>
+
+                next_state <= fetch;
+
+            end case;
+
+          when("0001") =>
+
+            rfright_on_opndbus <= '1';
+            b15to0             <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          -- SRload< = 1'b1;
+          when("0010") =>
+
+            -- lda
+            readmem                <= '1';
+            rs_on_addressunitrside <= '1';
+            rplus0                 <= '1';
+
+            next_state <= exec2lda;
+
+          when("0011") =>
+
+            -- sta
+            rfright_on_opndbus     <= '1';
+            writemem               <= '1';
+            b15to0                 <= '1';
+            alu_on_databus         <= '1';
+            rd_on_addressunitrside <= '1';
+            rplus0                 <= '1';
+
+          when("0100") =>
+
+          -- inp
+
+          when("0101") =>
+
+          -- oup
+
+          when("0110") =>
+
+            -- and
+            rfright_on_opndbus <= '1';
+            aandb              <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("0111") =>
+
+            -- or
+            rfright_on_opndbus <= '1';
+            aorb               <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1000") =>
+
+            -- not
+            rfright_on_opndbus <= '1';
+            notb               <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1001") =>
+
+            -- shl
+            rfright_on_opndbus <= '1';
+            shlb               <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1010") =>
+
+            -- shr
+            rfright_on_opndbus <= '1';
+            shrb               <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1011") =>
+
+            -- add
+            rfright_on_opndbus <= '1';
+            aaddb              <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1100") =>
+
+            -- sub
+            rfright_on_opndbus <= '1';
+            asubb              <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1101") =>
+
+            -- mul
+            rfright_on_opndbus <= '1';
+            amulb              <= '1';
+            alu_on_databus     <= '1';
+            rfl_write          <= '1';
+            rfh_write          <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1110") =>
+
+            -- cmp
+            rfright_on_opndbus <= '1';
+            alu_on_databus     <= '1';
+            acmpb              <= '1';
+            cload              <= '1';
+            zload              <= '1';
+
+          when("1111") =>
+
+            case(irout(1 downto 0)) is
+
+              when("00") =>
+
+                -- mil
+                b15to0         <= '1';
+                rfl_write      <= '1';
+                rfh_write      <= '1';
+                ir_on_lopndbus <= '1';
+
+              when("01") =>
+
+                -- mih
+                b15to0         <= '1';
+                rfl_write      <= '1';
+                rfh_write      <= '1';
+                ir_on_lopndbus <= '1';
+
+              when("10") =>
+
+                -- spc
+                pcplusi            <= '1';
+                address_on_databus <= '1';
+                rfl_write          <= '1';
+                rfh_write          <= '1';
+
+              when("11") =>
+
+                -- jpa
+                pcplusi                <= '1';
+                rd_on_addressunitrside <= '1';
+
+              when OTHERS =>
+
+                next_state <= fetch;
+
+            end case;
+
+          when OTHERS =>
+
+            next_state <= fetch;
+
+        end case;
+
+        pcplus1    <= '1';
+        enablepc   <= '1';
+        next_state <= fetch;
+
+      when exec2lda =>
+
+        if (memdataready = '0') then
+          rplus0                 <= '1';
+          rs_on_addressunitrside <= '1';
+          readmem                <= '1';
+          next_state             <= exec2lda;
+        else
+          rfl_write <= '1';
+          rfh_write <= '1';
+
+          pcplus1    <= '1';
+          enablepc   <= '1';
+          next_state <= fetch;
+        end if;
 
       when incpc =>
 
