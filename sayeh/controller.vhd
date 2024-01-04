@@ -174,67 +174,75 @@ begin
 
         case(irout(15 downto 12)) is
 
-          -- register is XXXX-XX-XX
           when("0000") =>
 
             case(irout(11 downto 8)) is
 
+              -- 0000-00-00 no operation
               when ("0000") =>
 
-              -- 0000-00-00 no operation
+              -- 0000-00-01 halt
               when ("0001") =>
 
-                -- 0000-00-01 halt
-                next_state <= halt;
                 check_next <= '0';
+                next_state <= halt;
 
+              -- 0000-00-10 set zero flag
               when ("0010") =>
 
-                -- 0000-00-10 set zero flag
                 zset <= '1';
 
+              -- 0000-00-11 clr zero flag
               when ("0011") =>
 
-                -- 0000-00-11 clr zero flag
                 zreset <= '1';
 
+              -- 0000-01-00 set carry flag
               when ("0100") =>
 
-                -- 0000-01-00 set carry flag
                 cset <= '1';
 
+              -- 0000-01-01 clr carry flag
               when ("0101") =>
 
-                -- 0000-01-01 clr carry flag
                 creset <= '1';
 
+              -- 0000-01-10 clr window pointer
               when ("0110") =>
 
-                -- 0000-01-10 clr window pointer
                 wpreset <= '1';
 
+              -- 0000-01-11 jump relative
               when ("0111") =>
 
-                -- 0000-01-11 jump addressed
                 pcplusi <= '1';
 
+                check_next <= '0';
+                next_state <= incpc;
+
+              -- 0000-10-00 branch if zero
               when ("1000") =>
 
-                -- 0000-10-00 branch if zero
                 if (zflag <= '1') then
                   pcplusi <= '1';
+
+                  check_next <= '0';
+                  next_state <= incpc;
                 end if;
 
+              -- 0000-10-00 branch if carry
               when ("1001") =>
 
-                -- 0000-10-00 branch if carry
                 if (cflag <= '1') then
                   pcplusi <= '1';
+
+                  check_next <= '0';
+                  next_state <= incpc;
                 end if;
 
+              -- 0000-10-10 add win pointer
               when ("1010") =>
 
-                -- 0000-10-10 add win pointer
                 wpadd <= '1';
 
               when OTHERS =>
@@ -243,6 +251,7 @@ begin
 
             end case;
 
+          -- 0001-DD-SS move register
           when("0001") =>
 
             rfright_on_opndbus <= '1';
@@ -253,20 +262,19 @@ begin
             cload              <= '1';
             zload              <= '1';
 
-          -- SRload< = 1'b1;
+          -- 0010-DD-SS load addressed
           when("0010") =>
 
-            -- lda
             readmem                <= '1';
             rs_on_addressunitrside <= '1';
             rplus0                 <= '1';
 
-            next_state <= exec1lda;
             check_next <= '0';
+            next_state <= exec1lda;
 
+          -- 0011-DD-SS store addressed
           when("0011") =>
 
-            -- sta
             rfright_on_opndbus     <= '1';
             writemem               <= '1';
             b15to0                 <= '1';
@@ -274,19 +282,15 @@ begin
             rd_on_addressunitrside <= '1';
             rplus0                 <= '1';
 
+          -- 0100-DD-SS input from port
           when("0100") =>
 
-            -- inp
-            check_next <= '0';
-
+          -- 0101-DD-SS output from port
           when("0101") =>
 
-            -- oup
-            check_next <= '0';
-
+          -- 0110-DD-SS alu and
           when("0110") =>
 
-            -- and
             rfright_on_opndbus <= '1';
             aandb              <= '1';
             alu_on_databus     <= '1';
@@ -295,9 +299,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 0111-DD-SS alu or
           when("0111") =>
 
-            -- or
             rfright_on_opndbus <= '1';
             aorb               <= '1';
             alu_on_databus     <= '1';
@@ -306,9 +310,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1000-DD-SS alu not
           when("1000") =>
 
-            -- not
             rfright_on_opndbus <= '1';
             notb               <= '1';
             alu_on_databus     <= '1';
@@ -317,9 +321,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1001-DD-SS alu shift left
           when("1001") =>
 
-            -- shl
             rfright_on_opndbus <= '1';
             shlb               <= '1';
             alu_on_databus     <= '1';
@@ -328,9 +332,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1010-DD-SS alu shift right
           when("1010") =>
 
-            -- shr
             rfright_on_opndbus <= '1';
             shrb               <= '1';
             alu_on_databus     <= '1';
@@ -339,9 +343,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1011-DD-SS alu add
           when("1011") =>
 
-            -- add
             rfright_on_opndbus <= '1';
             aaddb              <= '1';
             alu_on_databus     <= '1';
@@ -350,9 +354,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1100-DD-SS alu sub
           when("1100") =>
 
-            -- sub
             rfright_on_opndbus <= '1';
             asubb              <= '1';
             alu_on_databus     <= '1';
@@ -361,9 +365,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1101-DD-SS alu mul
           when("1101") =>
 
-            -- mul
             rfright_on_opndbus <= '1';
             amulb              <= '1';
             alu_on_databus     <= '1';
@@ -372,9 +376,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1110-DD-SS alu cmp
           when("1110") =>
 
-            -- cmp
             rfright_on_opndbus <= '1';
             alu_on_databus     <= '1';
             acmpb              <= '1';
@@ -385,40 +389,46 @@ begin
 
             case(irout(9 downto 8)) is
 
+              -- 1110-DD-00-I move Immd low
               when("00") =>
 
-                -- mil
                 b15to0         <= '1';
                 rfl_write      <= '1';
                 rfh_write      <= '1';
                 ir_on_lopndbus <= '1';
 
+              -- 1110-DD-01-I move Immd high
               when("01") =>
 
-                -- mih
                 b15to0         <= '1';
                 rfl_write      <= '1';
                 rfh_write      <= '1';
                 ir_on_lopndbus <= '1';
 
+              -- 1110-DD-10-I save PC
               when("10") =>
 
-                -- spc
                 pcplusi            <= '1';
                 address_on_databus <= '1';
                 rfl_write          <= '1';
                 rfh_write          <= '1';
 
+                check_next <= '0';
+                next_state <= incpc;
+
+              -- 1110-DD-11-I jump addresed
               when("11") =>
 
-                -- jpa
                 pcplusi                <= '1';
                 rd_on_addressunitrside <= '1';
 
+                check_next <= '0';
+                next_state <= incpc;
+
               when OTHERS =>
 
-                next_state <= fetch;
                 check_next <= '0';
+                next_state <= fetch;
 
             end case;
 
@@ -469,66 +479,74 @@ begin
 
         case(irout(7 downto 4)) is
 
-          -- register is XXXX-XX-XX
           when("0000") =>
 
             case(irout(3 downto 0)) is
 
+              -- 0000-00-00 no operation
               when ("0000") =>
 
-              -- 0000-00-00 no operation
+              -- 0000-00-01 halt
               when ("0001") =>
 
-                -- 0000-00-01 halt
                 next_state <= halt;
 
+              -- 0000-00-10 set zero flag
               when ("0010") =>
 
-                -- 0000-00-10 set zero flag
                 zset <= '1';
 
+              -- 0000-00-11 clr zero flag
               when ("0011") =>
 
-                -- 0000-00-11 clr zero flag
                 zreset <= '1';
 
+              -- 0000-01-00 set carry flag
               when ("0100") =>
 
-                -- 0000-01-00 set carry flag
                 cset <= '1';
 
+              -- 0000-01-01 clr carry flag
               when ("0101") =>
 
-                -- 0000-01-01 clr carry flag
                 creset <= '1';
 
+              -- 0000-01-10 clr window pointer
               when ("0110") =>
 
-                -- 0000-01-10 clr window pointer
                 wpreset <= '1';
 
+              -- 0000-01-11 jump relative
               when ("0111") =>
 
-                -- 0000-01-11 jump addressed
                 pcplusi <= '1';
 
+                check_next <= '0';
+                next_state <= incpc;
+
+              -- 0000-10-00 branch if zero
               when ("1000") =>
 
-                -- 0000-10-00 branch if zero
                 if (zflag <= '1') then
                   pcplusi <= '1';
+
+                  check_next <= '0';
+                  next_state <= incpc;
                 end if;
 
+              -- 0000-10-00 branch if carry
               when ("1001") =>
 
-                -- 0000-10-00 branch if carry
                 if (cflag <= '1') then
                   pcplusi <= '1';
+
+                  check_next <= '0';
+                  next_state <= incpc;
                 end if;
 
+              -- 0000-10-10 add win pointer
               when ("1010") =>
 
-                -- 0000-10-10 add win pointer
                 wpadd <= '1';
 
               when OTHERS =>
@@ -537,6 +555,7 @@ begin
 
             end case;
 
+          -- 0001-DD-SS move register
           when("0001") =>
 
             rfright_on_opndbus <= '1';
@@ -547,19 +566,19 @@ begin
             cload              <= '1';
             zload              <= '1';
 
-          -- SRload< = 1'b1;
+          -- 0010-DD-SS load addressed
           when("0010") =>
 
-            -- lda
             readmem                <= '1';
             rs_on_addressunitrside <= '1';
             rplus0                 <= '1';
 
+            check_next <= '0';
             next_state <= exec2lda;
 
+          -- 0011-DD-SS store addressed
           when("0011") =>
 
-            -- sta
             rfright_on_opndbus     <= '1';
             writemem               <= '1';
             b15to0                 <= '1';
@@ -567,17 +586,15 @@ begin
             rd_on_addressunitrside <= '1';
             rplus0                 <= '1';
 
+          -- 0100-DD-SS input from port
           when("0100") =>
 
-          -- inp
-
+          -- 0101-DD-SS output from port
           when("0101") =>
 
-          -- oup
-
+          -- 0110-DD-SS alu and
           when("0110") =>
 
-            -- and
             rfright_on_opndbus <= '1';
             aandb              <= '1';
             alu_on_databus     <= '1';
@@ -586,9 +603,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 0111-DD-SS alu or
           when("0111") =>
 
-            -- or
             rfright_on_opndbus <= '1';
             aorb               <= '1';
             alu_on_databus     <= '1';
@@ -597,9 +614,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1000-DD-SS alu not
           when("1000") =>
 
-            -- not
             rfright_on_opndbus <= '1';
             notb               <= '1';
             alu_on_databus     <= '1';
@@ -608,9 +625,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1001-DD-SS alu shift left
           when("1001") =>
 
-            -- shl
             rfright_on_opndbus <= '1';
             shlb               <= '1';
             alu_on_databus     <= '1';
@@ -619,9 +636,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1010-DD-SS alu shift right
           when("1010") =>
 
-            -- shr
             rfright_on_opndbus <= '1';
             shrb               <= '1';
             alu_on_databus     <= '1';
@@ -630,9 +647,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1011-DD-SS alu add
           when("1011") =>
 
-            -- add
             rfright_on_opndbus <= '1';
             aaddb              <= '1';
             alu_on_databus     <= '1';
@@ -641,9 +658,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1100-DD-SS alu sub
           when("1100") =>
 
-            -- sub
             rfright_on_opndbus <= '1';
             asubb              <= '1';
             alu_on_databus     <= '1';
@@ -652,9 +669,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1101-DD-SS alu mul
           when("1101") =>
 
-            -- mul
             rfright_on_opndbus <= '1';
             amulb              <= '1';
             alu_on_databus     <= '1';
@@ -663,9 +680,9 @@ begin
             cload              <= '1';
             zload              <= '1';
 
+          -- 1110-DD-SS alu cmp
           when("1110") =>
 
-            -- cmp
             rfright_on_opndbus <= '1';
             alu_on_databus     <= '1';
             acmpb              <= '1';
@@ -676,35 +693,41 @@ begin
 
             case(irout(1 downto 0)) is
 
+              -- 1110-DD-00-I move Immd low
               when("00") =>
 
-                -- mil
                 b15to0         <= '1';
                 rfl_write      <= '1';
                 rfh_write      <= '1';
                 ir_on_lopndbus <= '1';
 
+              -- 1110-DD-01-I move Immd high
               when("01") =>
 
-                -- mih
                 b15to0         <= '1';
                 rfl_write      <= '1';
                 rfh_write      <= '1';
                 ir_on_lopndbus <= '1';
 
+              -- 1110-DD-10-I save PC
               when("10") =>
 
-                -- spc
                 pcplusi            <= '1';
                 address_on_databus <= '1';
                 rfl_write          <= '1';
                 rfh_write          <= '1';
 
+                check_next <= '0';
+                next_state <= incpc;
+
+              -- 1110-DD-11-I jump addresed
               when("11") =>
 
-                -- jpa
                 pcplusi                <= '1';
                 rd_on_addressunitrside <= '1';
+
+                check_next <= '0';
+                next_state <= incpc;
 
               when OTHERS =>
 
@@ -718,9 +741,11 @@ begin
 
         end case;
 
-        pcplus1    <= '1';
-        enablepc   <= '1';
-        next_state <= fetch;
+        if (check_next == '1') then
+          pcplus1    <= '1';
+          enablepc   <= '1';
+          next_state <= fetch;
+        end if;
 
       when exec2lda =>
 
