@@ -60,7 +60,7 @@ entity datapath is
     wpreset : in    std_logic;
     wpadd   : in    std_logic;
 
-    -- Cotroller inputs
+    -- Other controller inputs
     address_on_databus : in    std_logic;
     alu_on_databus     : in    std_logic;
     ir_on_lopndbus     : in    std_logic;
