@@ -38,6 +38,14 @@ end entity arithmeticunit;
 
 architecture dataflow of arithmeticunit is
 
+  component bit8x8 is
+    port (
+      x : in    std_logic_vector(7 downto 0);
+      y : in    std_logic_vector(7 downto 0);
+      z : out   std_logic_vector(15 downto 0)
+    );
+   end component;
+  
   -- enables to use easily the case expression
   constant b15to0h : std_logic_vector(9 downto 0) := "1000000000";
   constant aandbh  : std_logic_vector(9 downto 0) := "0100000000";
@@ -52,6 +60,8 @@ architecture dataflow of arithmeticunit is
 
   -- out signal
   signal aloutsignal : std_logic_vector(15 downto 0);
+  
+  signal product : std_logic_vector(15 downto 0);
 
 begin
 
@@ -59,13 +69,12 @@ begin
   alu : process (
                  a, b, b15to0, aandb, aorb, notb,
                  shlb, shrb, aaddb, asubb, amulb,
-                 acmpb, cin, aloutsignal
+                 acmpb, cin, aloutsignal, product
                 ) is
 
     variable temp : std_logic_vector(9 downto 0);
     variable sum  : std_logic_vector(16 downto 0);
     variable sub  : std_logic_vector(16 downto 0);
-    variable prod : std_logic_vector(15 downto 0);
 
   begin
 
@@ -75,14 +84,13 @@ begin
     aloutsignal <= (OTHERS => '0');
 
     temp := (b15to0, aandb, aorb, notb, shlb, shrb, aaddb, asubb, amulb, acmpb);
-    prod  := std_logic_vector(unsigned(a(7 downto 0)) + unsigned(b(7 downto 0)));
     
     if cin = '1' then    
-      sum  := std_logic_vector(unsigned(a) + unsigned(b) + to_unsigned(1, 16));
-      sub  := std_logic_vector(unsigned(a) - unsigned(b) - to_unsigned(1, 16));
+      sum  := std_logic_vector(unsigned("0"&a) + unsigned("0"&b) + to_unsigned(1, 17));
+      sub  := std_logic_vector(unsigned("0"&a) - unsigned("0"&b) - to_unsigned(1, 17));
     else
-      sum  := std_logic_vector(unsigned(a) + unsigned(b));
-      sub  := std_logic_vector(unsigned(a) - unsigned(b));
+      sum  := std_logic_vector(unsigned("0"&a) + unsigned("0"&b));
+      sub  := std_logic_vector(unsigned("0"&a) - unsigned("0"&b));
     end if;
 
     case temp is
@@ -123,7 +131,7 @@ begin
 
       when amulbh =>
 
-        aloutsignal <= prod;
+        aloutsignal <= product;
 
       when acmpbh =>
 
@@ -154,6 +162,8 @@ begin
   end process alu;
 
   alout <= aloutsignal;
+  
+  mul: bit8x8 port map(a(7 downto 0), b(7 downto 0), product); 
 
 end architecture dataflow;
 
