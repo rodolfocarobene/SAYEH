@@ -196,7 +196,7 @@ begin
       shadow                 => shadow,
       shadow_en              => shadow_en,
       addressbus             => addressbus,
-      instruction            => instruction
+      instruction            => instruction (15 downto 8)
     );
 
   p2 : component controller

@@ -65,7 +65,7 @@ begin
   p0 : component programcounter
     port map (
       clk      => clk,
-      pcenable => pcenable,
+      enablepc => pcenable,
       input    => temp,
       output   => pcout
     );

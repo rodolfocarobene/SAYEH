@@ -37,7 +37,7 @@ begin
       if (wprst = '1') then
         outputsignal <= "000000";
       elsif (wpadd='1') then
-        outputsignal <= outputsignal + input;
+        outputsignal <= std_logic_vector(unsigned(outputsignal) + unsigned(input));
       end if;
     end if;
 

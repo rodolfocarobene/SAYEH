@@ -4,7 +4,8 @@
 
 library ieee;
   use ieee.std_logic_1164.all;
-
+  use ieee.numeric_std.all;
+  
 entity arithmeticunit is
   port (
     -- the two inputs of the ALU
@@ -42,7 +43,7 @@ architecture dataflow of arithmeticunit is
   constant aandbh  : std_logic_vector(9 downto 0) := "0100000000";
   constant aorbh   : std_logic_vector(9 downto 0) := "0010000000";
   constant notbh   : std_logic_vector(9 downto 0) := "0001000000";
-  constant sh1bh   : std_logic_vector(9 downto 0) := "0000100000";
+  constant shlbh   : std_logic_vector(9 downto 0) := "0000100000";
   constant shrbh   : std_logic_vector(9 downto 0) := "0000010000";
   constant aaddbh  : std_logic_vector(9 downto 0) := "0000001000";
   constant asubbh  : std_logic_vector(9 downto 0) := "0000000100";
@@ -74,10 +75,15 @@ begin
     aloutsignal <= (OTHERS => '0');
 
     temp := (b15to0, aandb, aorb, notb, shlb, shrb, aaddb, asubb, amulb, acmpb);
-
-    sum  := a + b + (16 downto 1 => '0', 0 => cin);
-    sub  := a - b - (16 downto 1 => '0', 0 => cin);
-    prod := a(7 downto 0) * b (7 downto 0);
+    prod  := std_logic_vector(unsigned(a(7 downto 0)) + unsigned(b(7 downto 0)));
+    
+    if cin = '1' then    
+      sum  := std_logic_vector(unsigned(a) + unsigned(b) + to_unsigned(1, 16));
+      sub  := std_logic_vector(unsigned(a) - unsigned(b) - to_unsigned(1, 16));
+    else
+      sum  := std_logic_vector(unsigned(a) + unsigned(b));
+      sub  := std_logic_vector(unsigned(a) - unsigned(b));
+    end if;
 
     case temp is
 

@@ -44,8 +44,8 @@ architecture dataflow of registerfile is
 begin
 
   -- change address considering WP
-  laddress <= base + laddr;
-  raddress <= base + raddr;
+  laddress <= std_logic_vector(unsigned(base) + unsigned(laddr));
+  raddress <= std_logic_vector(unsigned(base) + unsigned(raddr));
 
   -- perform reading, after conversion to integer
   lout <= reg_memory(to_integer(unsigned(laddress)));

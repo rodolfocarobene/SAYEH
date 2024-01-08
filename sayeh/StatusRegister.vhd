@@ -3,6 +3,9 @@
 -- Collection of two flags for ALU
 -- carry and zero flag
 
+library ieee;
+  use ieee.std_logic_1164.all;
+
 entity statusregister is
   port (
     clk : in    std_logic;
