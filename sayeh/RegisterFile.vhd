@@ -36,7 +36,7 @@ architecture dataflow of registerfile is
 
   -- memory for registers is a 64x16 signal
 
-  type memory is array (0 downto 63) of std_logic_vector(15 downto 0);
+  type memory is array (0 to 63) of std_logic_vector(15 downto 0);
 
   signal reg_memory         : memory;
   signal raddress, laddress : std_logic_vector(5 downto 0);

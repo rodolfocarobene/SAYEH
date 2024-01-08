@@ -221,9 +221,9 @@ begin
       amulb  => amulb,
       acmpb  => acmpb,
       alout  => alout,
-      cin    => srcin,
-      cout   => srcout,
-      zout   => srzout
+      cin    => srcout,
+      cout   => srcin,
+      zout   => srzin
     );
 
   rf : component registerfile
@@ -291,8 +291,8 @@ begin
   opndbus              <= right when (rfright_on_opndbus = '1') else
                           (others => 'Z');
 
-  instruction <= irout (15 downto 0) when (shadow = '1') else
-                 (others => 'Z');
+  instruction <= irout (15 downto 8) when (shadow = '1') else
+                 irout (7 downto 0);
   shadow_en   <= '0' when irout(7 downto 0) = "00001111" else
                  '1';
 
