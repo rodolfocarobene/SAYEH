@@ -35,7 +35,6 @@ entity controller is
     aandb                  : out   std_logic;
     aorb                   : out   std_logic;
     amulb                  : out   std_logic;
-    adivb                  : out   std_logic;
     notb                   : out   std_logic;
     acmpb                  : out   std_logic;
     shrb                   : out   std_logic;
@@ -112,7 +111,6 @@ begin
     asubb                  <= '0';
     aorb                   <= '0';
     amulb                  <= '0';
-    adivb                  <= '0';
     notb                   <= '0';
     acmpb                  <= '0';
     shrb                   <= '0';
