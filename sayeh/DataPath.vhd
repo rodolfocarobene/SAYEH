@@ -76,7 +76,7 @@ end entity datapath;
 
 architecture path of datapath is
 
-  component adressingunit is
+  component addressingunit is
     port (
       clk      : in    std_logic;
       rside    : in    std_logic_vector(15 downto 0);
@@ -89,9 +89,9 @@ architecture path of datapath is
       pcenable : in    std_logic;
       address  : out   std_logic_vector(15 downto 0)
     );
-  end component adressingunit;
+  end component addressingunit;
 
-  component alu is
+  component arithmeticunit is
     port (
       a      : in    std_logic_vector(15 downto 0);
       b      : in    std_logic_vector(15 downto 0);
@@ -110,9 +110,9 @@ architecture path of datapath is
       cout   : out   std_logic;
       zout   : out   std_logic
     );
-  end component alu;
+  end component arithmeticunit;
 
-  component register_file is
+  component registerfile is
     port (
       clk      : in    std_logic;
       input    : in    std_logic_vector(15 downto 0);
@@ -124,7 +124,7 @@ architecture path of datapath is
       lout     : out   std_logic_vector(15 downto 0);
       rout     : out   std_logic_vector(15 downto 0)
     );
-  end component register_file;
+  end component registerfile;
 
   component instruction_register is
     port (
@@ -135,7 +135,7 @@ architecture path of datapath is
     );
   end component instruction_register;
 
-  component status_register is
+  component statusregister is
     port (
       clk    : in    std_logic;
       cin    : in    std_logic;
@@ -148,7 +148,7 @@ architecture path of datapath is
       cout   : out   std_logic;
       zout   : out   std_logic
     );
-  end component status_register;
+  end component statusregister;
 
   component window_pointer is
     port (
@@ -192,7 +192,7 @@ architecture path of datapath is
 begin
 
   -- components initialization
-  au : component adressingunit
+  au : component addressingunit
     port map (
       clk      => clk,
       rside    => addressunitrsidebus,
@@ -206,7 +206,7 @@ begin
       address  => address
     );
 
-  alu : component alu
+  alu : component arithmeticunit
     port map (
       a      => left,
       b      => opndbus,
@@ -226,7 +226,7 @@ begin
       zout   => srzout
     );
 
-  rf : component register_file
+  rf : component registerfile
     port map (
       clk      => clk,
       input    => databus,
@@ -247,7 +247,7 @@ begin
       output    => irout
     );
 
-  sr : component status_register
+  sr : component statusregister
     port map (
       clk    => clk,
       cin    => srcin,

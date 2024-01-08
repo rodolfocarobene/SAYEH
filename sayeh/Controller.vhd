@@ -87,7 +87,7 @@ begin
   begin
 
     if (externalreset='1') then
-      current_state <= reset_state;
+      current_state <= reset;
     else
       if (clk'event and clk = '1') then
         current_state <= next_state;
