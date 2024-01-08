@@ -177,7 +177,7 @@ architecture path of datapath is
   signal opndbus : std_logic_vector(15 downto 0);
 
   -- Used for ALU and StatusRegister
-  signal aluout : std_logic_vector(15 downto 0);
+  signal alout : std_logic_vector(15 downto 0);
   signal srcin  : std_logic;
   signal srzout : std_logic;
   signal srcout : std_logic;
@@ -196,13 +196,13 @@ begin
     port map (
       clk      => clk,
       rside    => addressunitrsidebus,
-      irside   => irout(7 downto 0),
+      iside   => irout(7 downto 0),
       resetpc  => resetpc,
       pcplusi  => pcplusi,
       pcplus1  => pcplus1,
-      rplusl   => rplusl,
+      rplusi   => rplusl,
       rplus0   => rplus0,
-      enablepc => enablepc,
+      pcenable => enablepc,
       address  => address
     );
 
@@ -258,7 +258,7 @@ begin
       zset   => zset,
       zreset => zreset,
       cout   => srcout,
-      zout   => srzout,
+      zout   => srzout
     );
 
   wp : component window_pointer
@@ -281,7 +281,7 @@ begin
                          (others => 'Z');
 
   databus <= address when (address_on_databus = '1') else
-             aluout when (alu_on_databus = '1') else
+             alout when (alu_on_databus = '1') else
              (others => 'Z');
 
   opndbus(7 downto 0)  <= irout (7 downto 0) when (ir_on_lopndbus ='1') else
@@ -291,7 +291,7 @@ begin
   opndbus              <= right when (rfright_on_opndbus = '1') else
                           (others => 'Z');
 
-  instruction <= irout (15 downto 0) when shadow else
+  instruction <= irout (15 downto 0) when (shadow = '1') else
                  (others => 'Z');
   shadow_en   <= '0' when irout(7 downto 0) = "00001111" else
                  '1';

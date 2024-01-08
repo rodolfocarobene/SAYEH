@@ -157,7 +157,7 @@ begin
   dp : component datapath
     port map (
       clk                    => clk,
-      databus                => databus
+      databus                => databus,
       resetpc                => resetpc,
       pcplusi                => pcplusi,
       pcplus1                => pcplus1,
@@ -196,7 +196,7 @@ begin
       shadow                 => shadow,
       shadow_en              => shadow_en,
       addressbus             => addressbus,
-      instruction            => instruction,
+      instruction            => instruction
     );
 
   p2 : component controller
@@ -214,14 +214,13 @@ begin
       enablepc               => enablepc,
       ir_on_lopndbus         => ir_on_lopndbus,
       rfright_on_opndbus     => rfright_on_opndbus,
-      irload                 => irioad,
+      irload                 => irload,
       b15to0                 => b15to0,
       aaddb                  => aaddb,
       asubb                  => asubb,
       aandb                  => aandb,
       aorb                   => aorb,
       amulb                  => amulb,
-      adivb                  => axorb,
       notb                   => notb,
       acmpb                  => acmpb,
       shrb                   => shrb,
@@ -231,8 +230,8 @@ begin
       zreset                 => zreset,
       cset                   => cset,
       creset                 => creset,
-      zload                  => srioad,
-      cload                  => srioad,
+      zload                  => srload,
+      cload                  => srload,
       rs_on_addressunitrside => rs_on_addressunitrside,
       rd_on_addressunitrside => rd_on_addressunitrside,
       pcplusi                => pcplusi,

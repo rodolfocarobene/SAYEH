@@ -443,8 +443,8 @@ begin
         --     and irout(15 downto 12) != "0100" -- verify
         --     and irout(15 downto 12) != "0101" -- verify
         --   ) then
-        if (check_next == '1') then
-          if (shadowen == '1') then
+        if (check_next = '1') then
+          if (shadow_en = '1') then
             next_state <= exec2;
           else
             pcplus1 <= '1';
@@ -465,7 +465,7 @@ begin
           rfl_write <= '1';
           rfh_write <= '1';
 
-          if (shadowen == '1') then
+          if (shadow_en = '1') then
             next_state <= exec2;
           else
             pcplus1    <= '1';
@@ -740,7 +740,7 @@ begin
 
         end case;
 
-        if (check_next == '1') then
+        if (check_next = '1') then
           pcplus1    <= '1';
           enablepc   <= '1';
           next_state <= fetch;
