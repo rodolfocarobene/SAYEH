@@ -14,6 +14,8 @@ entity sayeh is
     memdataready  : in    std_logic;
     readmem       : out   std_logic;
     writemem      : out   std_logic;
+    readio        : out   std_logic;
+    writeio       : out   std_logic;
 
     databus    : inout std_logic_vector(15 downto 0);
     addressbus : out   std_logic_vector(15 downto 0)
@@ -90,7 +92,6 @@ architecture sayeharch of sayeh is
       aandb                  : out   std_logic;
       aorb                   : out   std_logic;
       amulb                  : out   std_logic;
-      adivb                  : out   std_logic;
       notb                   : out   std_logic;
       acmpb                  : out   std_logic;
       shrb                   : out   std_logic;
@@ -114,7 +115,10 @@ architecture sayeharch of sayeh is
       rplus0                 : out   std_logic;
       rplusi                 : out   std_logic;
       rfl_write              : out   std_logic;
-      rfh_write              : out   std_logic
+      rfh_write              : out   std_logic;
+      srload                 : out   std_logic;
+      readio                 : out   std_logic;
+      writeio                : out   std_logic
     );
   end component controller;
 
@@ -152,6 +156,7 @@ architecture sayeharch of sayeh is
   signal cout,                   zout                   : std_logic;
   signal instruction                                    : std_logic_vector(15 downto 0);
 
+    
 begin
 
   dp : component datapath
@@ -244,7 +249,10 @@ begin
       rplus0                 => rplus0,
       rplusi                 => rplus1,
       rfl_write              => rflwrite,
-      rfh_write              => rfhwrite
+      rfh_write              => rfhwrite,
+      srload                 => srload,
+      readio                 => readio,
+      writeio                => writeio
     );
 
 end architecture sayeharch;
