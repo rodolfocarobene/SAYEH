@@ -12,7 +12,7 @@ entity controller is
 
     -- inputs: irout Register output, ALU flags,
     -- external control signals
-    irout         : in    std_logic_vector(15 downto 0);
+    irout         : in    std_logic_vector(7 downto 0);
     externalreset : in    std_logic;
     -- outputs of the StatusRegister
     cflag : in    std_logic;
@@ -167,6 +167,7 @@ begin
     case pstate is
 
       when reset =>
+        report "Current state is reset";
 
         if (externalreset = '1') then
           wpreset  <= '1';
@@ -180,6 +181,7 @@ begin
         end if;
 
       when halt =>
+        report "Current state is halt";
 
         if (externalreset = '1') then
           nstate <= fetch;
@@ -188,6 +190,7 @@ begin
         end if;
 
       when fetch =>
+        report "Current state is fetch";
 
         if (externalreset = '1') then
           nstate <= reset;
@@ -197,6 +200,7 @@ begin
         end if;
 
       when memread =>
+        report "Current state is memread";
 
         if (externalreset = '1') then
           nstate <= reset;
@@ -212,6 +216,17 @@ begin
         end if;
 
       when exec1 =>
+        report "Current state is exec1";
+
+        report "Irout: "
+          & std_logic'image(irout(7))
+          & std_logic'image(irout(6))
+          & std_logic'image(irout(5))
+          & std_logic'image(irout(4))
+          & std_logic'image(irout(3))
+          & std_logic'image(irout(2))
+          & std_logic'image(irout(1))
+          & std_logic'image(irout(0));
 
         if (externalreset = '1') then
           nstate <= reset;
@@ -234,6 +249,8 @@ begin
                   end if;
 
                 when hlt =>
+
+                  report "Halt instruction encuntered";
 
                   nstate <= halt;
 
@@ -361,6 +378,7 @@ begin
               nstate                 <= exec1lda;
 
             when sta =>
+              report "Current opcode is sta";
 
               rplus0                 <= '1';
               rd_on_addressunitrside <= '1';
@@ -543,6 +561,7 @@ begin
               case irout (1 downto 0) is
 
                 when mil =>
+                  report "Current opcode is mil";
 
                   ir_on_lopndbus <= '1';
                   alu_on_databus <= '1';
@@ -554,6 +573,7 @@ begin
                   nstate         <= fetch;
 
                 when mih =>
+                  report "Current opcode is mih";
 
                   ir_on_hopndbus <= '1';
                   alu_on_databus <= '1';
@@ -595,6 +615,7 @@ begin
         end if;
 
       when exec1lda =>
+        report "Current state is exec1lda";
 
         if (externalreset = '1') then
           nstate <= reset;
@@ -618,6 +639,7 @@ begin
         end if;
 
       when exec1sta =>
+        report "Current state is exec1sta";
 
         if (externalreset = '1') then
           nstate <= reset;
@@ -641,6 +663,7 @@ begin
         end if;
 
       when exec2 =>
+        report "Current state is exec2";
 
         shadow <= '1';
 
@@ -865,6 +888,7 @@ begin
         end if;
 
       when exec2lda =>
+        report "Current state is exec2lda";
 
         shadow <= '1';
 
@@ -886,6 +910,7 @@ begin
         end if;
 
       when exec2sta =>
+        report "Current state is exec2sta";
 
         shadow <= '1';
 
@@ -906,6 +931,7 @@ begin
         end if;
 
       when incpc =>
+        report "Current state is incpc";
 
         pcplus1  <= '1';
         enablepc <= '1';

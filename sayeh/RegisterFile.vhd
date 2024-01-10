@@ -65,7 +65,7 @@ begin
       -- if right enabler is 1, then take right part
       -- of input and store it in memory(raddress)
       if (rfhwrite='1') then
-        reg_memory(to_integer(unsigned(raddress)))(15 downto 8) <= input(15 downto 8);
+        reg_memory(to_integer(unsigned(laddress)))(15 downto 8) <= input(15 downto 8);
       end if;
     end if;
 

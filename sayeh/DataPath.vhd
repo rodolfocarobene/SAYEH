@@ -291,7 +291,7 @@ begin
   opndbus              <= right when (rfright_on_opndbus = '1') else
                           (others => 'Z');
 
-  instruction <= irout (15 downto 8) when (shadow = '1') else
+  instruction <= irout (15 downto 8) when (shadow = '0') else
                  irout (7 downto 0);
   shadow_en   <= '0' when irout(7 downto 0) = "00001111" else
                  '1';

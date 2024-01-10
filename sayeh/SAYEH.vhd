@@ -73,7 +73,7 @@ architecture sayeharch of sayeh is
   component controller is
     port (
       clk                    : in    std_logic;
-      irout                  : in    std_logic_vector(15 downto 0);
+      irout                  : in    std_logic_vector(7 downto 0);
       externalreset          : in    std_logic;
       cflag                  : in    std_logic;
       zflag                  : in    std_logic;
@@ -154,9 +154,9 @@ architecture sayeharch of sayeh is
   signal ir_on_hopndbus                                 : std_logic;
   signal rfright_on_opndbus                             : std_logic;
   signal cout,                   zout                   : std_logic;
-  signal instruction                                    : std_logic_vector(15 downto 0);
+  signal instruction                                    : std_logic_vector(7 downto 0);
 
-    
+
 begin
 
   dp : component datapath
@@ -201,7 +201,7 @@ begin
       shadow                 => shadow,
       shadow_en              => shadow_en,
       addressbus             => addressbus,
-      instruction            => instruction (15 downto 8)
+      instruction            => instruction
     );
 
   p2 : component controller
