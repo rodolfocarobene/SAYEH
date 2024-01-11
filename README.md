@@ -8,17 +8,17 @@ Navabi.
 
 The design of the SAYEH processor is as follows:
 
-[SAYEH](sayeh/SAYEH.vhd)
-└── [Datapath](sayeh/DataPath.vhd)
-    ├── [Addressing Unit](sayeh/AddresingUnit.vhd)
-    │   ├── [Program Counter](sayeh/ProgramCounter.vhd)
-    │   └── [Address logic](sayeh/AddressLogic.vhd)
-    ├── [Arithmetic Unit](sayeh/ArithmeticUnit.vhd)
-    │   └── [bit8x8](sayeh/bit8x8.vhd)
-    │       └── [bit1x1](sayeh/bit1x1.vhd)
-    ├── [Register File](sayeh/RegisterFile.vhd)
-    ├── [Instruction Register](sayeh/InstructionRegister.vhd)
-    └── [Window Pointer](sayeh/WindowPointer.vhd)
+[SAYEH](sayeh/SAYEH.vhd)<br>
+└── [Datapath](sayeh/DataPath.vhd)<br>
+    ├── [Addressing Unit](sayeh/AddresingUnit.vhd)<br>
+    │   ├── [Program Counter](sayeh/ProgramCounter.vhd)<br>
+    │   └── [Address logic](sayeh/AddressLogic.vhd)<br>
+    ├── [Arithmetic Unit](sayeh/ArithmeticUnit.vhd)<br>
+    │   └── [bit8x8](sayeh/bit8x8.vhd)<br>
+    │       └── [bit1x1](sayeh/bit1x1.vhd)<br>
+    ├── [Register File](sayeh/RegisterFile.vhd)<br>
+    ├── [Instruction Register](sayeh/InstructionRegister.vhd)<br>
+    └── [Window Pointer](sayeh/WindowPointer.vhd)<br>
 
 All of the required files are in the [sayeh](sayeh/) directory.
 
@@ -30,11 +30,11 @@ component a program from a `prog.txt` file and execute it when simulated. The
 output is N files `memN.hex` with the hexadecimal memory of SAYEH. Two different
 programs are loaded as examples
 
-[Test SAYEH](sayeh/testbench/test_sayeh.vhd)
-├── [SAYEH processor](sayeh/)
-├── [Memory Sayeh](sayeh/testbench/sayehmemory.vhd)
-├── [prog.txt](sayeh/testbench/prog.txt)
-└── [prog.txt.1](sayeh/testbench/prog.txt.1)
+[Test SAYEH](sayeh/testbench/test_sayeh.vhd)<br>
+├── [SAYEH processor](sayeh/)<br>
+├── [Memory Sayeh](sayeh/testbench/sayehmemory.vhd)<br>
+├── [prog.txt](sayeh/testbench/prog.txt)<br>
+└── [prog.txt.1](sayeh/testbench/prog.txt.1)<br>
 
 ## Assembly language
 
