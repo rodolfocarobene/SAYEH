@@ -1,3 +1,11 @@
+---- Test program
+----
+---- output is mem1.hex with the first 17 registers for the program
+---- reg_769 = 16
+---- reg_770 = 16
+---- reg_771 = 32 (16+16)
+---- reg_772 = 64 (16*4)
+
 0000 mil r0 00  :
 0001 mih r0 03  : r0 = 768
 0002 mil r1 10  :
