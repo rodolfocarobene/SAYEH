@@ -55,7 +55,6 @@ architecture behavioral of memorysayeh is
       addr := addr mod blocksize;
       read (instr, memonic);
 
-      report "Read memonic: " & memonic;
       case memonic is
 
         when " nop" =>
@@ -635,6 +634,8 @@ architecture behavioral of memorysayeh is
 
   end procedure updatefile;
 
+  signal wait_to_write : std_logic := '0';
+
 begin
 
   read_write : process (clk) is
@@ -663,6 +664,47 @@ begin
 
     -- end if;
     if (clk='0') then
+      report "START"   &
+      "    clock: " & std_logic'image(clk) &
+      "    readmem: "  & std_logic'image(readmem)  &
+      "    writemem: " & std_logic'image(writemem) &
+      "    changemem:" & boolean'image(changemem) &
+      "    Mem address: " & integer'image(ad) & " at page " & integer'image(memloadedno) &
+      "    Memready read: "
+      & std_logic'image(buffermem(ad mod blocksize)(15))
+      & std_logic'image(buffermem(ad mod blocksize)(14))
+      & std_logic'image(buffermem(ad mod blocksize)(13))
+      & std_logic'image(buffermem(ad mod blocksize)(12))
+      & std_logic'image(buffermem(ad mod blocksize)(11))
+      & std_logic'image(buffermem(ad mod blocksize)(10))
+      & std_logic'image(buffermem(ad mod blocksize)(9))
+      & std_logic'image(buffermem(ad mod blocksize)(8))
+      & std_logic'image(buffermem(ad mod blocksize)(7))
+      & std_logic'image(buffermem(ad mod blocksize)(6))
+      & std_logic'image(buffermem(ad mod blocksize)(5))
+      & std_logic'image(buffermem(ad mod blocksize)(4))
+      & std_logic'image(buffermem(ad mod blocksize)(3))
+      & std_logic'image(buffermem(ad mod blocksize)(2))
+      & std_logic'image(buffermem(ad mod blocksize)(1))
+      & std_logic'image(buffermem(ad mod blocksize)(0))
+      & "      Databus:"
+      & std_logic'image(databus(15))
+      & std_logic'image(databus(14))
+      & std_logic'image(databus(13))
+      & std_logic'image(databus(12))
+      & std_logic'image(databus(11))
+      & std_logic'image(databus(10))
+      & std_logic'image(databus(9))
+      & std_logic'image(databus(8))
+      & std_logic'image(databus(7))
+      & std_logic'image(databus(6))
+      & std_logic'image(databus(5))
+      & std_logic'image(databus(4))
+      & std_logic'image(databus(3))
+      & std_logic'image(databus(2))
+      & std_logic'image(databus(1))
+      & std_logic'image(databus(0));
+
       if (readmem = '1') then
         memdataready <= '0';
         -- if addressbus value >= 64*1024 databus <= NULL
@@ -671,10 +713,6 @@ begin
         else
             -- if the page to load is different from the existing
 
-          report "Memloadedno: " & integer'image(memloadedno);
-          report "Ad: "          & integer'image(ad);
-          report "blocksize: "   & integer'image(blocksize);
-          report "segmentsno: "  & integer'image(segmentsno);
 
           if (memloadedno /= ((ad / blocksize) + 1)) then
             -- if not last page?
@@ -697,86 +735,54 @@ begin
         end if;
         -- signal that the data was read and its correctly stored in databus
 
-        report "Memready read: "
-          & std_logic'image(buffermem(ad mod blocksize)(15))
-          & std_logic'image(buffermem(ad mod blocksize)(14))
-          & std_logic'image(buffermem(ad mod blocksize)(13))
-          & std_logic'image(buffermem(ad mod blocksize)(12))
-          & std_logic'image(buffermem(ad mod blocksize)(11))
-          & std_logic'image(buffermem(ad mod blocksize)(10))
-          & std_logic'image(buffermem(ad mod blocksize)(9))
-          & std_logic'image(buffermem(ad mod blocksize)(8))
-          & std_logic'image(buffermem(ad mod blocksize)(7))
-          & std_logic'image(buffermem(ad mod blocksize)(6))
-          & std_logic'image(buffermem(ad mod blocksize)(5))
-          & std_logic'image(buffermem(ad mod blocksize)(4))
-          & std_logic'image(buffermem(ad mod blocksize)(3))
-          & std_logic'image(buffermem(ad mod blocksize)(2))
-          & std_logic'image(buffermem(ad mod blocksize)(1))
-          & std_logic'image(buffermem(ad mod blocksize)(0));
-
         memdataready <= '1';
       elsif (writemem = '1') then
         memdataready <= '0';
-        -- write if address in addressbus is valid
-        if (ad < (segmentsno * blocksize)) then
-          -- if we are in the correct page
-          if (memloadedno = ((ad / blocksize) + 1)) then
-            -- if the loaded buffer is different from what
-            -- is stored in the databus, set changemem
-            if (buffermem (ad mod blocksize)/=databus) then
-              changemem := true;
-            end if;
-            buffermem (ad mod blocksize) := databus;
-            -- if memory is to be changed, call updatefile and do it
-            if (changemem=true) then
-              updatefile (buffermem, memloadedno);
-              changemem := false;
-            end if;
-          -- if we are not on the correct page
-          else
-            -- change page
-            if (memloadedno/= (segmentsno + 1)) then
+        if wait_to_write = '1' then
+          -- write if address in addressbus is valid
+          if (ad < (segmentsno * blocksize)) then
+            -- if we are in the correct page
+            if (memloadedno = ((ad / blocksize) + 1)) then
+              -- if the loaded buffer is different from what
+              -- is stored in the databus, set changemem
+              if (buffermem (ad mod blocksize)/=databus) then
+                changemem := true;
+              end if;
+              buffermem (ad mod blocksize) := databus;
+              -- if memory is to be changed, call updatefile and do it
               if (changemem=true) then
                 updatefile (buffermem, memloadedno);
+                changemem := false;
+              end if;
+            -- if we are not on the correct page
+            else
+              -- change page
+              if (memloadedno/= (segmentsno + 1)) then
+                if (changemem=true) then
+                  updatefile (buffermem, memloadedno);
+                end if;
+              end if;
+              memloadedno := (ad / blocksize) + 1;
+              memload (buffermem, memloadedno);
+              changemem   := false;
+              -- if the loaded buffer is different from what
+              -- is stored in the databus, set changemem
+              if (buffermem (ad mod blocksize)/=databus) then
+                changemem := true;
+              end if;
+              buffermem (ad mod blocksize) := databus;
+              -- if memory is to be changed, call updatefile and do it
+              if (changemem=true) then
+                updatefile (buffermem, memloadedno);
+                changemem := false;
               end if;
             end if;
-            memloadedno := (ad / blocksize) + 1;
-            memload (buffermem, memloadedno);
-            changemem   := false;
-            -- if the loaded buffer is different from what
-            -- is stored in the databus, set changemem
-            if (buffermem (ad mod blocksize)/=databus) then
-              changemem := true;
-            end if;
-            buffermem (ad mod blocksize) := databus;
-            -- if memory is to be changed, call updatefile and do it
-            if (changemem=true) then
-              updatefile (buffermem, memloadedno);
-              changemem := false;
-            end if;
           end if;
+          memdataready <= '1';
+          wait_to_write <= '0';
+        else
+          wait_to_write <= '1';
         end if;
-
-        report "Memready write: "
-          & std_logic'image(buffermem(ad mod blocksize)(15))
-          & std_logic'image(buffermem(ad mod blocksize)(14))
-          & std_logic'image(buffermem(ad mod blocksize)(13))
-          & std_logic'image(buffermem(ad mod blocksize)(12))
-          & std_logic'image(buffermem(ad mod blocksize)(11))
-          & std_logic'image(buffermem(ad mod blocksize)(10))
-          & std_logic'image(buffermem(ad mod blocksize)(9))
-          & std_logic'image(buffermem(ad mod blocksize)(8))
-          & std_logic'image(buffermem(ad mod blocksize)(7))
-          & std_logic'image(buffermem(ad mod blocksize)(6))
-          & std_logic'image(buffermem(ad mod blocksize)(5))
-          & std_logic'image(buffermem(ad mod blocksize)(4))
-          & std_logic'image(buffermem(ad mod blocksize)(3))
-          & std_logic'image(buffermem(ad mod blocksize)(2))
-          & std_logic'image(buffermem(ad mod blocksize)(1))
-          & std_logic'image(buffermem(ad mod blocksize)(0));
-
-        memdataready <= '1';
       end if;
     end if;
 
